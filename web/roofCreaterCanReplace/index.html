@@ -1,0 +1,921 @@
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>The manually controlled model</title>
+
+
+<script  type="text/javascript" src="../javascript/echarts/5.3.1/echarts.min.js"></script>
+<script  type="text/javascript" src="../javascript/echarts/5.3.1/theme/dark.js"></script>
+<script  type="text/javascript" src="../javascript/jquery/jquery-1.12.4.min.js"></script>
+<script  type="text/javascript" src="../javascript/utils/Array.js?v=2.0"></script>
+<script  type="text/javascript" src="../javascript/utils/layer/layer.js"></script>
+<link rel="stylesheet" href="../javascript/utils/layer/theme/default/layer.css" type="text/css">
+<script  type="text/javascript" src="../javascript/utils/gaussian.js"></script>
+<script  type="text/javascript" src="../javascript/utils/CommonUtil.js?v=2.0"></script>
+<script  type="text/javascript" src="../javascript/utils/Math.js?v=2.0"></script>
+<script  type="text/javascript" src="../javascript/utils/Date.js?v=2.0"></script>
+<script  type="text/javascript" src="../javascript/utils/sheetjs/xlsx.mini.js"></script>
+<script  type="text/javascript" src="../javascript/utils/sheetjs/ExcelUtils.js"></script>
+
+<script  type="text/javascript" src="js/Tile.js?v=0.8" ></script>
+<script  type="text/javascript" src="js/TileCreator.js?v=0.8" ></script>
+<script  type="text/javascript" src="js/TilePool.js?v=0.8" ></script>
+<script  type="text/javascript" src="js/Roof.js?v=0.8" ></script>
+
+<script  type="text/javascript" src="js/data.js?v=0.8" ></script>
+<script  type="text/javascript" src="js/charts.js?v=0.8" ></script>
+<script  type="text/javascript" src="js/SimulateCharts.js?v=0.8" ></script>
+<script  type="text/javascript" src="js/main.js?v=0.8" ></script>
+
+</head>
+<style>
+::-webkit-scrollbar {width:5px;height:5px;position:absolute}
+::-webkit-scrollbar-thumb {background-color:#5bc0de}
+::-webkit-scrollbar-track {background-color:#ddd}
+div,label,span,h1,img,li{
+moz-user-select: -moz-none;
+-moz-user-select: none;
+-o-user-select:none;
+-khtml-user-select:none;
+-webkit-user-select:none;
+-ms-user-select:none;
+user-select:none;
+}
+body{
+	padding:0px;
+	margin:0px;
+	color:white;
+	background: #262626;
+}
+
+input[type='text']{
+	width:100%;
+}
+.chart{
+	background: black;
+}
+.yellow{
+	color:yellow;
+}
+.red{
+	color:red;
+}
+.discard {
+    color: #999999;
+    background: #626262 !important;
+}
+.border{
+	border:1px solid #00706a;
+/* 	padding:5px; */
+	margin:5px;
+}
+.wuji {
+    text-align: center;
+    background: #008e8e;
+    float: left;
+    width: calc(100% - 10px);
+    margin: 0px 5px;
+}
+.wuyan {
+    text-align: center;
+    background: #785300;
+    float: left;
+    width: calc(100% - 10px);
+    margin: 0px 5px;
+}
+.table{
+	padding:5px;
+}
+.table>tbody>tr>td{
+	padding:1px 0px;
+}
+.table .ctitle{
+	font-size: 16px;
+    font-family: 黑体;
+	border-bottom:2px solid #c7edfb;
+}
+.ctable-title {
+    position: relative;
+    top: 10px;
+    left: 10px;
+    background:#262626;
+	color:#ffbe46;
+}
+.ctable-title + table{
+	padding:7px 5px 0px 5px;
+}
+.ctable {
+    padding: 0px 5px;
+    border: 1px solid #444444;
+    width: 100%;
+}
+.ctable table{
+	width: 100%;
+	
+}
+
+.ctable table>tbody>tr>td{
+	padding: 5px;
+	font-size: 12px;
+}
+.ctable input[type=text]{
+	margin-right:5px;
+}
+.ctable select {
+    margin-right: 5px;
+    top: 1px;
+    position: relative;
+}
+.ctable .ctable-line{
+	border-bottom:1px solid #fff69f73;
+	font-size: 14px;
+}
+.cthead {
+    margin: 0px 1px;
+    position: relative;
+    width: calc(100% - 2px)!important;
+}
+.cthead + .ctable-border{
+	padding: 0px;
+    margin-top: -33px;
+}
+.cthead + div{
+	padding: 0px;
+    margin-top: -33px;
+}
+.ctable-border{
+	padding:15px 0px 0px 0px;
+    border: 1px solid #444444;
+}
+.ctable-border.ctable{
+	border:0px;
+}
+.info{
+   width: 100%;
+   height: 100%;
+   border: none;
+}
+.info .name{
+   color: red;
+}
+.info .value{
+   color: green;
+}
+.simulateStatus{
+	color: green;
+}
+.tile {
+    width: 40px;
+    height: 20px;
+    float: left;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid #cf9700;
+    margin: 5px;
+    background: #2c2300;
+}
+.tile_tong{
+    background: #383838;
+    border: 1px solid #626262;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.house-roof{
+	float: left;
+    width: calc(100% - 355px);
+    height: calc(100% - 233px);
+    overflow: auto;
+}
+.roof-con {
+	float: left;
+    height: calc(50% - 45px);
+    width: calc(100% - 10px);
+    /* overflow: auto; */
+    position: relative;
+    text-align: center;
+}
+.roof{
+}
+
+.roof-tile {
+    text-align: center;
+    cursor: pointer;
+    margin: 5px;
+    position: absolute;
+}
+.tile-nouse{
+	background: #ff0000;
+}
+.tile-nouse.tile-trycount{
+	background: #b3b300;
+}
+.roof-ban-tile{
+    width: 80px;
+    height: 105px;
+/*     background: #2c2300; */
+/*     border: 1px solid #cf9700; */
+}
+.roof-tong-tile{
+    width: 60px;
+    height: 105px;
+/*     background: #383838; */
+/*     border: 1px solid #626262; */
+/*     border-top-left-radius: 24px; */
+/*     border-top-right-radius: 24px; */
+}
+.roofA-ban-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: -1;
+    background: #c17d0066;
+    transform: perspective(2em) rotateX(2deg);
+}
+.roofA-tong-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: -1;
+    background: #4e4e4e;
+    transform: perspective(2em) rotateX(-2deg);
+}
+.roofB-ban-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: -1;
+    background: #c17d0066;
+    transform: perspective(2em) rotateX(-2deg);
+}
+.roofB-tong-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: -1;
+    background: #4e4e4e;
+    transform: perspective(2em) rotateX(2deg);
+}
+
+.pool {
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+    height: calc(100%);
+    overflow: auto;
+}
+.count{
+	color:#00ff37;
+}
+.used{
+	color:#ffeb00;
+	margin-right:10px;
+}
+.surplus{
+	color:#ff4700;
+}
+.ichart {
+    background: url('chart.png');
+    background-size: 100%;
+    width: 20px;
+    display: inline-block;
+    height: 20px;
+    border: 2px solid #725430;
+    line-height: 29px;
+    /* top: 0px; */
+    /* position: relative; */
+    /* right: 0px; */
+    background-color: white;
+    cursor: pointer;
+    float: right;
+}
+
+.layui-layer-title {
+    padding: 0 80px 0 20px;
+    height: 42px;
+    line-height: 42px;
+    border-bottom: 1px solid #0085ad;
+    font-size: 16px;
+    color: #333;
+    overflow: hidden;
+    background-color: #7efcff;
+    border-radius: 2px 2px 0 0;
+}
+.layui-layer {
+    border: 1px solid #7efcff;
+}
+.layui-layer-dialog .layui-layer-padding {
+    background: black;
+}
+
+
+ul {
+    list-style: none;
+}
+
+.tab {
+	border: 0;
+    margin: 0px;
+    padding: 0px 10px;
+    height: 41px;
+}
+
+.tab li {
+    position: relative;
+    float: left;
+    height: 34px;
+    line-height: 34px;
+    text-align: center;
+    cursor: pointer;
+    border: 2px solid #4c4c4c;
+    border-bottom: 0;
+    padding: 0px 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    margin-top: 5px;
+}
+
+.tab span {
+    position: absolute;
+    right: 0;
+    top: 10px;
+    background: #ddd;
+    width: 1px;
+    height: 14px;
+    overflow: hidden;
+}
+
+.products {
+}
+
+.products .main {
+    float: left;
+    display: none;
+    border:1px solid #0054b5;
+}
+
+.products .main.selected {
+    display: block;
+}
+
+.tab li.active {
+    border-color: #0093ff;
+    background: #00223c;
+}
+.main .chart{
+width:calc(100vw - 355px);height:calc(100vh - 125px);
+}
+</style>
+<body>
+<div class="border" style="float:left; width:330px;Z-INDEX:9;height: calc(100% - 14px);">
+  <div style="padding:0px;margin:0px;overflow: auto;height:calc(100% - 427px);">
+  <span class="ctable-title">The size of pan tiles</span>
+  <table class="table ctable">
+	<tbody>
+	<tr>
+ 		<td class="ctable-line">
+ 			The width of exterior side of larger ends<i class="ichart" onclick='showGaussChart("The width of exterior side of Pan tile larger ends","ban.bigWWidth");'></i>
+ 		</td>
+	</tr>
+	<tr>
+ 		<td >
+ 			<table>
+				<tr >
+			 		<td style="width: 36px;">
+			 			Mean
+			 		</td>
+			 		<td>
+			 			<input type="text" name="prototypes" property="ban.bigWWidth.mean" value="" customType="float">
+			 		</td>
+				</tr>
+				<tr>
+			 		<td>
+			 			Variance
+			 		</td>
+			 		<td>
+			 			<input type="text" name="prototypes" property="ban.bigWWidth.variance" value=""  customType="float">
+			 		</td>
+				</tr>
+ 			
+ 			</table>
+ 		</td>
+	</tr>
+<!-- 	<tr> -->
+<!--  		<td class="ctable-line"> -->
+<!--  			大头外高<i class="ichart" onclick='showGaussChart("板瓦大头外高","ban.bigWHeight");'></i> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+<!-- 	<tr> -->
+<!--  		<td > -->
+<!--  			<table> -->
+<!-- 				<tr> -->
+<!-- 			 		<td style="width: 36px;">  -->
+<!-- 			 			Mean -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="ban.bigWHeight.mean" value="" customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!-- 				<tr> -->
+<!-- 			 		<td> -->
+<!-- 			 			Variance -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="ban.bigWHeight.variance" value=""  customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!--  			</table> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+<!-- 	<tr> -->
+<!--  		<td class="ctable-line"> -->
+<!--  			大头内高<i class="ichart" onclick='showGaussChart("大头内高","ban.bigNHeight");'></i> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+<!-- 	<tr> -->
+<!--  		<td > -->
+<!--  			<table> -->
+<!-- 				<tr> -->
+<!-- 			 		<td style="width: 36px;">  -->
+<!-- 			 			Mean -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="ban.bigNHeight.mean" value="" customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!-- 				<tr> -->
+<!-- 			 		<td> -->
+<!-- 			 			Variance -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="ban.bigNHeight.variance" value=""  customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!--  			</table> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+	
+
+	<tr>
+ 		<td class="ctable-line">
+ 			Thickness<i class="ichart" onclick='showGaussChart("The thickness of Pan tile","ban.thickness");'></i>
+ 		</td>
+	</tr>
+	<tr>
+ 		<td >
+ 			<table>
+				<tr>
+			 		<td style="width: 36px;"> 
+			 			Mean
+			 		</td>
+			 		<td>
+			 			<input type="text" name="prototypes" property="ban.thickness.mean" value="" customType="float">
+			 		</td>
+				</tr>
+				<tr>
+			 		<td>
+			 			Variance
+			 		</td>
+			 		<td>
+			 			<input type="text" name="prototypes" property="ban.thickness.variance" value=""  customType="float">
+			 		</td>
+				</tr>
+ 			</table>
+ 		</td>
+	</tr>
+	<tr>
+ 		<td class="ctable-line">
+ 			The width of exterior side of smaller ends <i class="ichart" onclick='showGaussChart("The width of exterior side of Pan tile smaller ends","ban.smallWWidth");'></i>
+ 		</td>
+	</tr>
+	<tr>
+ 		<td >
+ 			<table>
+				<tr>
+			 		<td style="width: 36px;"> 
+			 			Mean
+			 		</td>
+			 		<td>
+			 			<input type="text" name="prototypes" property="ban.smallWWidth.mean" value="" customType="float">
+			 		</td>
+				</tr>
+				<tr>
+			 		<td>
+			 			Variance
+			 		</td>
+			 		<td>
+			 			<input type="text" name="prototypes" property="ban.smallWWidth.variance" value=""  customType="float">
+			 		</td>
+				</tr>
+ 			</table>
+ 		</td>
+	</tr>
+<!-- 	<tr> -->
+<!--  		<td class="ctable-line"> -->
+<!--  			小头外高<i class="ichart" onclick='showGaussChart("板瓦小头外高","ban.smallWHeight");'></i> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+<!-- 	<tr> -->
+<!--  		<td > -->
+<!--  			<table> -->
+<!-- 				<tr> -->
+<!-- 			 		<td style="width: 36px;">  -->
+<!-- 			 			Mean -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="ban.smallWHeight.mean" value="" customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!-- 				<tr> -->
+<!-- 			 		<td> -->
+<!-- 			 			Variance -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="ban.smallWHeight.variance" value=""  customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!--  			</table> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+<!-- 	<tr> -->
+<!--  		<td class="ctable-line"> -->
+<!--  			小头内高<i class="ichart" onclick='showGaussChart("小头内高","ban.smallNHeight");'></i> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+<!-- 	<tr> -->
+<!--  		<td > -->
+<!--  			<table> -->
+<!-- 				<tr> -->
+<!-- 			 		<td style="width: 36px;">  -->
+<!-- 			 			Mean -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="ban.smallNHeight.mean" value="" customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!-- 				<tr> -->
+<!-- 			 		<td> -->
+<!-- 			 			Variance -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="ban.smallNHeight.variance" value=""  customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!--  			</table> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+</tbody>
+</table>
+<span class="ctable-title">The size of cover tiles</span>
+<table class="table ctable">
+<tbody>
+	<tr>
+ 		<td class="ctable-line">
+ 			The width of exterior side of larger ends<i class="ichart" onclick='showGaussChart("The width of exterior side of Cover tile larger ends","tong.bigWWidth");'></i>
+ 		</td>
+	</tr>
+	<tr>
+ 		<td >
+ 			<table>
+				<tr >
+			 		<td style="width: 36px;">
+			 			Mean
+			 		</td>
+			 		<td>
+			 			<input type="text" name="prototypes" property="tong.bigWWidth.mean" value="" customType="float">
+			 		</td>
+				</tr>
+				<tr>
+			 		<td>
+			 			Variance
+			 		</td>
+			 		<td>
+			 			<input type="text" name="prototypes" property="tong.bigWWidth.variance" value=""  customType="float">
+			 		</td>
+				</tr>
+ 			
+ 			</table>
+ 		</td>
+	</tr>
+<!-- 	<tr> -->
+<!--  		<td class="ctable-line"> -->
+<!--  			大头外高<i class="ichart" onclick='showGaussChart("筒瓦大头外高","tong.bigWHeight");'></i> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+<!-- 	<tr> -->
+<!--  		<td > -->
+<!--  			<table> -->
+<!-- 				<tr> -->
+<!-- 			 		<td style="width: 36px;">  -->
+<!-- 			 			Mean -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="tong.bigWHeight.mean" value="" customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!-- 				<tr> -->
+<!-- 			 		<td> -->
+<!-- 			 			Variance -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="tong.bigWHeight.variance" value=""  customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!--  			</table> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+<!-- 	<tr> -->
+<!--  		<td class="ctable-line"> -->
+<!--  			大头内高<i class="ichart" onclick='showGaussChart("大头内高","tong.bigNHeight");'></i> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+<!-- 	<tr> -->
+<!--  		<td > -->
+<!--  			<table> -->
+<!-- 				<tr> -->
+<!-- 			 		<td style="width: 36px;">  -->
+<!-- 			 			Mean -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="tong.bigNHeight.mean" value="" customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!-- 				<tr> -->
+<!-- 			 		<td> -->
+<!-- 			 			Variance -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="tong.bigNHeight.variance" value=""  customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!--  			</table> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+	
+	<tr>
+ 		<td class="ctable-line">
+ 			Thickness<i class="ichart" onclick='showGaussChart("The thickness of Cover tile","tong.thickness");'></i>
+ 		</td>
+	</tr>
+	<tr>
+ 		<td >
+ 			<table>
+				<tr>
+			 		<td style="width: 36px;"> 
+			 			Mean
+			 		</td>
+			 		<td>
+			 			<input type="text" name="prototypes" property="tong.thickness.mean" value="" customType="float">
+			 		</td>
+				</tr>
+				<tr>
+			 		<td>
+			 			Variance
+			 		</td>
+			 		<td>
+			 			<input type="text" name="prototypes" property="tong.thickness.variance" value=""  customType="float">
+			 		</td>
+				</tr>
+ 			</table>
+ 		</td>
+	</tr>
+	<tr>
+ 		<td class="ctable-line">
+ 			The width of exterior side of smaller ends <i class="ichart" onclick='showGaussChart("The width of exterior side of Cover tile smaller ends","tong.smallWWidth");'></i>
+ 		</td>
+	</tr>
+	<tr>
+ 		<td >
+ 			<table>
+				<tr>
+			 		<td style="width: 36px;"> 
+			 			Mean
+			 		</td>
+			 		<td>
+			 			<input type="text" name="prototypes" property="tong.smallWWidth.mean" value=""  customType="float">
+			 		</td>
+				</tr>
+				<tr>
+			 		<td>
+			 			Variance
+			 		</td>
+			 		<td>
+			 			<input type="text" name="prototypes" property="tong.smallWWidth.variance" value="" customType="float">
+			 		</td>
+				</tr>
+ 			</table>
+ 		</td>
+	</tr>
+	
+<!-- 	<tr> -->
+<!--  		<td class="ctable-line"> -->
+<!--  			小头外高<i class="ichart" onclick='showGaussChart("筒瓦小头外高","tong.smallWHeight");'></i> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+<!-- 	<tr> -->
+<!--  		<td > -->
+<!--  			<table> -->
+<!-- 				<tr> -->
+<!-- 			 		<td style="width: 36px;">  -->
+<!-- 			 			Mean -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="tong.smallWHeight.mean" value="" customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!-- 				<tr> -->
+<!-- 			 		<td> -->
+<!-- 			 			Variance -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="tong.smallWHeight.variance" value=""  customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!--  			</table> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+<!-- 	<tr> -->
+<!--  		<td class="ctable-line"> -->
+<!--  			小头内高<i class="ichart" onclick='showGaussChart("小头外高","tong.smallNHeight");'></i> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+<!-- 	<tr> -->
+<!--  		<td > -->
+<!--  			<table> -->
+<!-- 				<tr> -->
+<!-- 			 		<td style="width: 36px;">  -->
+<!-- 			 			Mean -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="tong.smallNHeight.mean" value="" customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!-- 				<tr> -->
+<!-- 			 		<td> -->
+<!-- 			 			Variance -->
+<!-- 			 		</td> -->
+<!-- 			 		<td> -->
+<!-- 			 			<input type="text" name="prototypes" property="tong.smallNHeight.variance" value=""  customType="float"> -->
+<!-- 			 		</td> -->
+<!-- 				</tr> -->
+<!--  			</table> -->
+<!--  		</td> -->
+<!-- 	</tr> -->
+</tbody>
+</table>
+
+</div>
+<span class="ctable-title">Computer-based simulation</span>
+  <table class="table ctable">
+<tbody>
+	<tr>
+ 		<td style="width:35px;">
+ 			Row
+ 		</td>
+ 		<td>
+ 			<input type="text" name="prototypes" property="config.rows" customType="int" value="20" notNull="true">
+ 		</td>
+ 		<td  style="width:35px;">
+ 			Column
+ 		</td>
+ 		<td>
+ 			<input type="text" name="prototypes" property="config.cols" customType="int" value="50" notNull="true">
+ 		</td>
+	</tr>
+	<tr>
+ 		<td colspan="4">
+ 			Analysis conditions：
+ 		</td>
+	</tr>
+	<tr>
+ 		<td colspan="4">
+ 			The reserve coefficient of the sampling pool:<input style="width:45px;" type="text" name="prototypes" property="use.multiple" customType="float" value="1.5" notNull="true">
+ 		</td>
+	</tr>
+	<tr>
+ 		<td colspan="4">
+ 			The maximum number of replacement:<input style="width:45px;" type="text" name="prototypes" property="use.maxTryCount" customType="int" value="10" notNull="true">
+ 		</td>
+	</tr>
+	<tr>
+ 		<td colspan="4" style="text-align: center;">
+ 			<input type="button" value="Analyse" onclick="analysis();">
+ 		</td>
+	</tr>
+	<tr>
+ 		<td colspan="4" style="text-align: center;">
+ 			<input type="button" value="The simulation results" onclick="showSimulateCharts();">
+ 		</td>
+	</tr>
+</tbody>
+</table>
+<span class="ctable-title">Information</span>
+<table class="table ctable " style="width:330px;height: 180px;">
+<tbody>
+	<tr>
+ 		<td >
+ 		<div class="info"></div>
+ 		</td>
+	</tr>
+	</tbody>
+</table>
+</div>
+<div class="border" style="Z-INDEX:-1;float:left;width:calc(100% - 355px);">
+	<table style="width:100%;">
+		<tr>
+			<td style="width: 50%;">
+				<span class="ctable-title"><input class='ban-tile-showbt'  type="checkbox" checked="checked" onclick='updateShow(this,"ban")'>Pan tile<span class="banPoolCount count"></span> <span class="banPoolUsed used"></span><span class="banPoolSurplus surplus"></span></span>
+				<table class="table ctable " style="height: 180px;">
+				<tbody>
+					<tr>
+				 		<td >
+				 		<div class="banPool pool"></div>
+				 		</td>
+					</tr>
+					</tbody>
+				</table>
+			</td>
+			<td>
+				<span class="ctable-title"><input class='tong-tile-showbt' type="checkbox" checked="checked" onclick='updateShow(this,"tong")'>Cover tile<span class="tongPoolCount count"></span> <span class="tongPoolUsed used"></span><span class="tongPoolSurplus surplus"></span></span>
+				<table class="table ctable " style="height: 180px;">
+				<tbody>
+					<tr>
+				 		<td >
+				 		<div class="tongPool pool"></div>
+				 		</td>
+					</tr>
+					</tbody>
+				</table>
+				
+			</td>
+		</tr>
+	</table>
+	
+</div>
+<div class="house-roof border">
+	<div class="wuyan">The eave A-----------------》</div>
+	<div class="border roof-con roofA">
+	</div>
+	<div class="wuji">The ridge</div>
+	<div class="border roof-con roofB">
+	
+	</div>
+	<div class="wuyan">《-----------------The eave B</div>
+</div>
+
+<div id="chartInfo" class="chart" style="display: none;">
+    <div id="chart" style="width: 866px;height:762px;"></div>
+    <div>
+    </div>
+</div>
+
+<div id="SimulateChartInfo" class="chart" style="display: none;">
+	<table class="table ctable ">
+	<tbody>
+		<tr>
+	 		<td style="width:215px;">
+	 		The number of simulation：
+	 		</td>
+	 		<td style="width:70px;">
+	 		<input class="simulateCount" type="text" value="100">
+	 		</td>
+	 		<td >
+	 		<input type="button" value="Start" onclick="simulateCharts.run();">
+	 		</td>
+	 		<td style="width: 240px;">
+	 			Status：<span class="simulateStatus">Not started</span>
+	 		</td>
+		</tr>
+		</tbody>
+	</table>
+	<ul class="tab">
+        <li class="tab-item active">The maximum number of replacement at each location</li>
+<!--         <li class="tab-item">每次总体情况</li> -->
+        <li class="tab-item">The maximum number of replacement of pan tiles</li>
+<!--         <li class="tab-item">板瓦每个位置重叠情况</li> -->
+        <li class="tab-item">The maximum number of replacement of cover tiles</li>
+<!--         <li class="tab-item">筒瓦每个位置重叠情况</li> -->
+    </ul>
+    <div class="products">
+        <div class="main selected">
+		    <div id="simulateDynChart" class="chart"></div>
+        </div>
+<!--         <div class="main"> -->
+<!-- 		    <div id="simulateTotalChart" class="chart"></div> -->
+<!--         </div> -->
+        <div class="main">
+		    <div id="simulateGridBanCountChart" class="chart" ></div>
+        </div>
+<!--         <div class="main"> -->
+<!-- 		    <div id="simulateGridBanOverlapChart" class="chart" ></div> -->
+<!--         </div> -->
+        <div class="main">
+		    <div id="simulateGridTongCountChart" class="chart" ></div>
+        </div>
+<!--         <div class="main"> -->
+<!-- 		    <div id="simulateGridTongOverlapChart" class="chart" ></div> -->
+<!--         </div> -->
+    </div>
+</div>
+</body>
+</html>
