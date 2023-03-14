@@ -1,0 +1,10 @@
+setwd("projects/qiaocun")
+library(ggplot2)
+library(pheatmap)
+cover<-read.table("coversim.csv",header=T,sep=",")
+cover$location<-rep(1:1960,100)
+cover_m<-subset(cover,cover$Time==-1)
+cover_m<-subset(cover_m,cover_m$location<=980)
+cover_p<-hist(cover_m$location,breaks=c(0:980),plot=FALSE)$counts
+cover_mx<-matrix(cover_p,nrow=20,ncol=49,dimnames=list(c('r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12','r13','r14','r15','r16','r17','r18','r19','r20'),c('c1','c2','c3','c4','c5','c6','c7','c8','c9','c10','c11','c12','c13','c14','c15','c16','c17','c18','c19','c20','c21','c22','c23','c24','c25','c26','c27','c28','c29','c30','c31','c32','c33','c34','c35','c36','c37','c38','c39','c40','c41','c42','c43','c44','c45','c46','c47','c48','c49')))
+p<-pheatmap(cover_mx,border='white',cluster_cols=F,cluster_rows=F,show_rownames=T,cellwidth=12,cellheight=40,show_colnames=T,legend=T)

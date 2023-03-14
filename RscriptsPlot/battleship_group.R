@@ -1,0 +1,31 @@
+setwd("projects/qiaocun/2050/group")
+g10<-read.table("g10.csv",header=T,sep=",")
+g11<-read.table("g11.csv",header=T,sep=",")
+g12<-read.table("g12.csv",header=T,sep=",")
+g13<-read.table("g13.csv",header=T,sep=",")
+g14<-read.table("g14.csv",header=T,sep=",")
+g15<-read.table("g15.csv",header=T,sep=",")
+## getting the maximum data for groups
+library(plyr)
+g10m<-ddply(g10,~Simulate,summarise,max=max(Time))
+g11m<-ddply(g11,~Simulate,summarise,max=max(Time))
+g12m<-ddply(g12,~Simulate,summarise,max=max(Time))
+g13m<-ddply(g13,~Simulate,summarise,max=max(Time))
+g14m<-ddply(g14,~Simulate,summarise,max=max(Time))
+g15m<-ddply(g15,~Simulate,summarise,max=max(Time))
+maxdata<-cbind(g10m$max,g11m$max,g12m$max,g13m$max,g14m$max,g15m$max)
+names<-c("g10","g11","g12","g13","g14","g15")
+colnames(maxdata)<-names
+maxdata<-as.data.frame(maxdata)
+t10<-hist(maxdata$g10,breaks=c(0,10,20,50,100,2000),plot=FALSE)$counts
+t11<-hist(maxdata$g11,breaks=c(0,10,20,50,100,2000),plot=FALSE)$counts
+t12<-hist(maxdata$g12,breaks=c(0,10,20,50,100,2000),plot=FALSE)$counts
+t13<-hist(maxdata$g13,breaks=c(0,10,20,50,100,2000),plot=FALSE)$counts
+t14<-hist(maxdata$g14,breaks=c(0,10,20,50,100,2000),plot=FALSE)$counts
+t15<-hist(maxdata$g15,breaks=c(0,10,20,50,100,2000),plot=FALSE)$counts
+maxplot<-cbind(t10,t11,t12,t13,t14,t15)
+maxplot<-as.matrix(maxplot)
+##battleeship plot
+library(plotrix)
+battleship.plot(maxplot,col="gray",border="white")
+maxplot

@@ -1,0 +1,36 @@
+setwd("projects/qiaocun")
+library(ggplot2)
+library(plyr)
+theme_set(theme_bw()+theme(legend.position="top"))
+
+##statistics of fail times of tiling on the roof
+pan<-read.table("pansim.csv",header=T,sep=",")
+cover<-read.table("coversim.csv",header=T,sep=",")
+pan$cate<-cut(pan$Time,breaks=c(-Inf,-1,0,1,2,3,4,5,10,50,100,3000),labels=c('Fail','0','1','2','3','4','5','5-10','10-50','50-100','>100'))
+pandata<-ddply(pan,~cate,summarise,counts=length(cate))
+cover$cate<-cut(cover$Time,breaks=c(-Inf,-1,0,1,2,3,4,5,10,50,100,3000),labels=c('Fail','0','1','2','3','4','5','5-10','10-50','50-100','>100'))
+coverdata<-ddply(cover,~cate,summarise,counts=length(cate))
+pandata$freq<-pandata$counts/sum(pandata$counts)
+coverdata$freq<-coverdata$counts/sum(coverdata$counts)
+pandata$type<-c("pan")
+coverdata$type<-c("cover")
+tiledata<-rbind(pandata,coverdata)
+tiledata$freq<-round(tiledata$freq,digits=2)
+#ploting with ggplot
+ggplot(tiledata,aes(x=cate,y=freq))+geom_col(aes(fill=type),position=position_dodge(0.8),width=0.7)+geom_text(aes(label=freq),size=3)
+
+##statistics of fail times of tiling in the sampling pool
+pan_pool<-read.table("paninpool.csv",header=T,sep=",")
+cover_pool<-read.table("coverinpool.csv",header=T,sep=",")
+pan_pool$cate<-cut(pan_pool$time,breaks=c(-Inf,-1,0,1,2,3,4,5,10,50,100,3000),labels=c('No-use','0','1','2','3','4','5','5-10','10-50','50-100','>100'))
+pan_pool_data<-ddply(pan_pool,~cate,summarise,counts=length(cate))
+cover_pool$cate<-cut(cover_pool$time,breaks=c(-Inf,-1,0,1,2,3,4,5,10,50,100,3000),labels=c('No-use','0','1','2','3','4','5','5-10','10-50','50-100','>100'))
+cover_pool_data<-ddply(cover_pool,~cate,summarise,counts=length(cate))
+pan_pool_data$freq<-pan_pool_data$counts/sum(pan_pool_data$counts)
+cover_pool_data$freq<-cover_pool_data$counts/sum(cover_pool_data$counts)
+pan_pool_data$type<-c("pan")
+cover_pool_data$type<-c("cover")
+tile_pool_data<-rbind(pan_pool_data,cover_pool_data)
+tile_pool_data$freq<-round(tile_pool_data$freq,digits=2)
+#ploting with ggplot
+ggplot(tile_pool_data,aes(x=cate,y=freq))+geom_col(aes(fill=type),position=position_dodge(0.8),width=0.7)+geom_text(aes(label=freq),size=3)
